@@ -29,3 +29,6 @@ sounddevice
 > pip install soundfile
 
 * usage: https://python-sounddevice.readthedocs.io/en/latest/usage.html
+
+Speech to Text
+* Whisper: https://platform.openai.com/docs/guides/speech-to-text/quickstart
