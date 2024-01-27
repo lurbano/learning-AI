@@ -32,3 +32,10 @@ sounddevice
 
 Speech to Text
 * Whisper: https://platform.openai.com/docs/guides/speech-to-text/quickstart
+
+## Testing
+
+* Record an audio clip (.wav) (5 sec):
+** > python3 recordingTest.py
+* Send to OpenAI Whisper to get transcript:
+** > python3 whisperTest.py
