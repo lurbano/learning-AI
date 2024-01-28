@@ -16,6 +16,8 @@ ct = 0
 audioDir = "audio/"
 audioData = np.array([])
 
+transcript = ''
+
 
 def fname(x):
     return f"{audioDir}rec{str(x).zfill(4)}.wav"
@@ -24,6 +26,7 @@ def callback(indata, frames, t, status):
     global ct
     global startTime
     global audioData
+    global transcript
     if status:
         print(status, flush=True)
 
@@ -37,6 +40,7 @@ def callback(indata, frames, t, status):
         sf.write(filename, audioData, fs)
         x = transcriber(filename)
         print(x)
+        transcript += x['text']
         #wavio.write(filename, indata[0], sample_rate, sampwidth=3)
         print(f"Audio saved to {filename}")
         audioData = np.array([])
@@ -46,3 +50,6 @@ startTime = time.monotonic()
 # Start recording using sounddevice
 with sd.InputStream(callback=callback, channels=1):
     sd.sleep(int(duration * 1000))
+
+print("Done")
+print(transcript)
