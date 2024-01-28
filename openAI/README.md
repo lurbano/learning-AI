@@ -17,7 +17,7 @@ get API key (you have to put money on the account to get it to work, it seems)
 ## Sound
 
 install ffmpeg
-> apt-get install ffmpeg libavcodec-extra
+> sudo apt-get install ffmpeg libavcodec-extra
 
 portaudio
 > sudo apt-get install libasound-dev
