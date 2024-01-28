@@ -4,7 +4,10 @@ routes = web.RouteTableDef()
 
 @routes.get('/')
 async def hello(request):
-    return web.Response(text="hola route")
+    print("serving home...")
+
+    return web.FileResponse('./index.html')
+
 
 app = web.Application()
 app.add_routes(routes)
