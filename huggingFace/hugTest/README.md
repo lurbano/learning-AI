@@ -15,3 +15,6 @@ https://pytorch.org/get-started/locally/
 default model:
 https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english
 
+
+webserver
+> pip install aiohttp
