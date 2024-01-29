@@ -12,11 +12,15 @@ pip install "transformers[sentencepiece]"
 pyTorch
 Select the appropriate options on:
 https://pytorch.org/get-started/locally/
-> pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+```
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+```
 
 default model:
 https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english
 
 
 webserver
-> pip install aiohttp
+```
+pip install aiohttp
+```
