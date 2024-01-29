@@ -19,8 +19,14 @@ audioData = np.array([])
 transcript = ''
 
 
-def fname(x):
-    return f"{audioDir}rec{str(x).zfill(4)}.wav"
+def fname(x, kind="rec"):
+    if kind == "rec":
+        prefix = "rec"
+        ftype = "wav"
+    else:
+        prefix = kind
+        ftype = "txt"
+    return f"{audioDir}{prefix}{str(x).zfill(4)}.{ftype}"
 
 def callback(indata, frames, t, status):
     global ct
@@ -40,6 +46,8 @@ def callback(indata, frames, t, status):
         sf.write(filename, audioData, fs)
         x = transcriber(filename)
         print(x)
+        with open(fname(ct, "trans"), "w") as f:
+            f.write(x['text'])
         transcript += x['text']
         #wavio.write(filename, indata[0], sample_rate, sampwidth=3)
         print(f"Audio saved to {filename}")
