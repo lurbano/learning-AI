@@ -78,7 +78,11 @@ class uHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 httpd = HTTPServer(('', port), uHTTPRequestHandler)
-httpd.serve_forever()
+# httpd.serve_forever()
+
+while True:
+    httpd.handle_request()
+    time.sleep(0.1)
 
 
 # while True:

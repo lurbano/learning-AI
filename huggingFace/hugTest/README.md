@@ -44,6 +44,18 @@ pip install soundfile
 Speech to Text
 * Whisper: https://platform.openai.com/docs/guides/speech-to-text/quickstart
 
+
+Text to Speech (in progress)
+
+```
+pip install git+https://github.com/suno-ai/bark.git
+```
+
+<!-- scipy
+```
+pip install scipy
+``` -->
+
 ### Testing
 
 * Record an audio clip (.wav) (5 sec):
