@@ -45,6 +45,21 @@ Speech to Text
 * Whisper: https://platform.openai.com/docs/guides/speech-to-text/quickstart
 
 
+## Gradio: easily build webpage for a model 
+https://www.gradio.app/guides/quickstart
+
+chatbot using langchain
+https://www.gradio.app/guides/creating-a-chatbot-fast#a-langchain-example
+
+## chat
+Huggingface text-generation-interface:
+https://github.com/huggingface/text-generation-inference
+
+
+## Pipelines
+https://huggingface.co/docs/transformers/v4.37.2/en/main_classes/pipelines#transformers.pipeline
+
+
 Text to Speech (in progress)
 
 ```
