@@ -4,7 +4,7 @@ import soundfile as sf
 processor = AutoProcessor.from_pretrained("suno/bark")
 model = BarkModel.from_pretrained("suno/bark")
 
-voice_preset = "v2/en_speaker_6"
+voice_preset = "v2/en_speaker_8"
 
 inputs = processor("Welcome to the Makerspace! [laughs] Let's get to work.", voice_preset=voice_preset)
 
