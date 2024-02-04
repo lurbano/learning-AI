@@ -12,6 +12,8 @@ pip install "transformers[sentencepiece]"
 pyTorch
 Select the appropriate options on:
 https://pytorch.org/get-started/locally/
+
+CPU only version (go to link above if you have CUDA or ROCm graphics cards)
 ```
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
