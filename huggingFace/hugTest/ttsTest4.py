@@ -3,7 +3,7 @@ import soundfile as sf
 import time
 
 # bark speaker library: https://suno-ai.notion.site/8b8e8749ed514b0cbf3f699013548683?v=bc67cff786b04b50b3ceb756fd05f68c
-language = "ja"
+language = "zh"
 
 
 processor = AutoProcessor.from_pretrained("suno/bark")
@@ -40,6 +40,13 @@ de 7
 de 3
 de 2
 it 6
-
-
+jp 3
+pl 0
+pl 9 - f
+pl - has some decent ones
+pt 0 *
+pt 8
+ru 6
+zh 8
+zh 9
 '''
