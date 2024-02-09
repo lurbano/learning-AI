@@ -40,7 +40,7 @@ de 7
 de 3
 de 2
 it 6
-jp 3
+ja 3
 pl 0
 pl 9 - f
 pl - has some decent ones
