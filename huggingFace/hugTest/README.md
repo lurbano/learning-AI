@@ -83,11 +83,11 @@ python3 recordingTest.py
 ```
 python3 whisperTest.py
 
-* Text to speech test. Generate .wav files for all the suno/bark voices in a given language (e.g. ```language = "en"```)
-```bash
+* Testing bark voices use ttsTest4 and change the language (eg: language = "it" for italian) see:
+    * Bark speakers: https://suno-ai.notion.site/8b8e8749ed514b0cbf3f699013548683?v=bc67cff786b04b50b3ceb756fd05f68c
+```
 python3 ttsTest4.py
 ```
-
 
 ## webserver
 ```
