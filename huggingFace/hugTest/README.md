@@ -89,6 +89,11 @@ python3 whisperTest.py
 python3 ttsTest4.py
 ```
 
+* Transcribe from audio:
+```bash
+python3 transcribe2.py
+```
+
 ## webserver
 ```
 pip install aiohttp
