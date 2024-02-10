@@ -83,6 +83,10 @@ python3 recordingTest.py
 ```
 python3 whisperTest.py
 
+* Text to speech test. Generate .wav files for all the suno/bark voices in a given language (e.g. ```language = "en"```)
+```bash
+python3 ttsTest4.py
+```
 
 
 ## webserver
