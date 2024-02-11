@@ -18,6 +18,9 @@
         <br>
         <input id="showCaptions" type="button" value="Show Captions">
         <div id="captions"></div>
+
+        <input id="showTranscript" type="button" value="Show Transcript">
+        <div id="fullTranscript"></div>
     </div>
 </body>
 
@@ -58,6 +61,11 @@
                     console.log("Caption:", data["status"])
                     captions.innerText = data["status"];
                 }
+
+                if (data["item"] == "getTranscript") {
+                    console.log("Caption:", data["status"])
+                    fullTranscript.innerHTML = data["status"];
+                }
             }
         }
         let data = {};
@@ -70,6 +78,9 @@
 
     function getCaptions(){
         sendRequest("/", "lastCaption");
+    }
+    function getTranscript(){
+        sendRequest("/", "getTranscript");
     }
 
     timeBut.addEventListener("click", function(){
@@ -86,6 +97,9 @@
     })
     showCaptions.addEventListener("click", function(){
         getCaptions();
+    })
+    showTranscript.addEventListener("click", function(){
+       getTranscript();
     })
 
 </script>

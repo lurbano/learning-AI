@@ -49,7 +49,12 @@ async def handlePost(request):
     if data['action'] == "lastCaption":
         print("Last Caption")
         rData['item'] = "lastCaption"
-        rData['status'] = myTranscriber.getLastCaption()
+        rData['status'] = myTranscriber.transcriptList[-1]
+
+    if data['action'] == "getTranscript":
+        print("Full Transcript")
+        rData['item'] = "getTranscript"
+        rData['status'] = " <br> ".join(myTranscriber.transcriptList)
 
     
     response = json.dumps(rData)

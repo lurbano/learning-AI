@@ -24,6 +24,7 @@ class uTranscribe:
 
         self.transcript = ''
         self.lastTranscriptFile = ""
+        self.transcriptList = ["Initial"]
 
         self.stream = sd.InputStream(callback=self.callback, channels=1)
 
@@ -43,10 +44,7 @@ class uTranscribe:
 
 
     def callback(self, indata, frames, t, status):
-        # global ct
-        # global startTime
-        # global audioData
-        # global transcript
+
         if status:
             print(status, flush=True)
 
@@ -64,6 +62,7 @@ class uTranscribe:
             with open(tfileName, "w") as f:
                 f.write(x['text'])
             self.lastTranscriptFile = tfileName
+            self.transcriptList.append(x['text'])
             self.transcript += x['text']
             #wavio.write(filename, indata[0], sample_rate, sampwidth=3)
             print(f"Audio saved to {filename}")
@@ -95,6 +94,7 @@ class uTranscribe:
         
     def startRecording(self):
         self.ct = 0     # keep track of each recording
+        self.transcriptList = ["Starting"]    #empty transcript list
 
         # empty audio folder
         cmd = f'rm ./{self.audioDir}trans*.txt ./{self.audioDir}rec*.wav'
@@ -121,18 +121,6 @@ class uTranscribe:
         print("getting last transcript file")
         return self.listTranscriptFiles()[-1]
 
-    # def getLastCaption(self):
-    #     print("getting last caption")
-    #     try: 
-    #         fname = self.lastTranscriptFile()
-    #         print(fname)
-    #         with open(fname, "r") as f:
-    #             data = f.read()
-    #         print(data)
-    #         return data
-    #     except:
-    #         print("No file")
-    #         return ""
 
     def getLastCaption(self):
         if self.lastTranscriptFile == "":
