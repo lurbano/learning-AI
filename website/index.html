@@ -49,11 +49,13 @@
                 if (data["item"] == "startRecording") {
                     console.log("Redording:", data["item"], data["status"]);
                     captionUpdates = setInterval(getCaptions, 1000);
+                    transcriptUpdates = setInterval(getTranscript, 1000);
                     
                 }
                 if (data["item"] == "stopRecording") {
                     console.log("Redording:", data["item"], data["status"]);
                     clearInterval(captionUpdates);
+                    clearInterval(transcriptUpdates);
                     
                 }
 
