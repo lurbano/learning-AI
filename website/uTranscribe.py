@@ -23,6 +23,7 @@ class uTranscribe:
         self.audioData = np.array([])
 
         self.transcript = ''
+        self.lastTranscriptFile = ""
 
         self.stream = sd.InputStream(callback=self.callback, channels=1)
 
@@ -59,8 +60,10 @@ class uTranscribe:
             sf.write(filename, self.audioData, self.samplerate)
             x = self.transcriber(filename)
             print(x)
-            with open(self.fname(self.ct, "trans"), "w") as f:
+            tfileName = self.fname(self.ct, "trans")
+            with open(tfileName, "w") as f:
                 f.write(x['text'])
+            self.lastTranscriptFile = tfileName
             self.transcript += x['text']
             #wavio.write(filename, indata[0], sample_rate, sampwidth=3)
             print(f"Audio saved to {filename}")
@@ -118,18 +121,32 @@ class uTranscribe:
         print("getting last transcript file")
         return self.listTranscriptFiles()[-1]
 
+    # def getLastCaption(self):
+    #     print("getting last caption")
+    #     try: 
+    #         fname = self.lastTranscriptFile()
+    #         print(fname)
+    #         with open(fname, "r") as f:
+    #             data = f.read()
+    #         print(data)
+    #         return data
+    #     except:
+    #         print("No file")
+    #         return ""
+
     def getLastCaption(self):
-        print("getting last caption")
+        if self.lastTranscriptFile == "":
+            return ""
         try: 
-            fname = self.lastTranscriptFile()
-            print(fname)
-            with open(fname, "r") as f:
+            with open(self.lastTranscriptFile, "r") as f:
                 data = f.read()
             print(data)
             return data
         except:
             print("No file")
             return ""
+    
+
 
 if __name__ == "__main__":
     myTranscriber = uTranscribe()
