@@ -45,6 +45,12 @@ async def handlePost(request):
         myTranscriber.stopRecording()
         rData['item'] = "stopRecording"
         rData['status'] = datetime.now().ctime() # a string representing the current time
+
+    if data['action'] == "lastCaption":
+        print("Last Caption")
+        rData['item'] = "lastCaption"
+        rData['status'] = myTranscriber.getLastCaption()
+
     
     response = json.dumps(rData)
     print("Response: ", response)
@@ -67,11 +73,12 @@ async def getLightLevel(dt=1):
         await asyncio.sleep(dt)
 
 
+
 async def main():
     app = web.Application()
     app.router.add_get('/', handle)
     app.router.add_post("/", handlePost)
-
+    
     runner = web.AppRunner(app)
     await runner.setup()
 

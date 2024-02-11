@@ -3,6 +3,8 @@ import soundfile as sf
 import numpy as np
 import time
 from transformers import pipeline
+import subprocess
+import glob
 
 class uTranscribe:
 
@@ -16,8 +18,7 @@ class uTranscribe:
         self.duration = 15  # Recording duration in seconds (5 minutes)
 
         self.dt = 5.0  # length of each clip in seconds
-        self.ct = 0     # keep track of each recording
-
+        
         self.audioDir = "audio/"
         self.audioData = np.array([])
 
@@ -90,6 +91,12 @@ class uTranscribe:
 
         
     def startRecording(self):
+        self.ct = 0     # keep track of each recording
+
+        # empty audio folder
+        cmd = f'rm ./{self.audioDir}trans*.txt ./{self.audioDir}rec*.wav'
+        subprocess.run(cmd, shell = True)
+
         print("Start recording ...")
         self.startTime = time.monotonic()
         self.stream.start()
@@ -98,9 +105,31 @@ class uTranscribe:
         self.stream.stop()
         print("Done")
         print("Transcript: ", self.transcript)
+        self.writeFinalTranscript()
         return self.transcript
 
-    
+    def listTranscriptFiles(self):
+        path = f"./{self.audioDir}trans*.txt"
+        print("path: ", path)
+        dir_list = glob.glob(path)
+        return sorted(dir_list, key=str.lower)
+
+    def lastTranscriptFile(self):
+        print("getting last transcript file")
+        return self.listTranscriptFiles()[-1]
+
+    def getLastCaption(self):
+        print("getting last caption")
+        try: 
+            fname = self.lastTranscriptFile()
+            print(fname)
+            with open(fname, "r") as f:
+                data = f.read()
+            print(data)
+            return data
+        except:
+            print("No file")
+            return ""
 
 if __name__ == "__main__":
     myTranscriber = uTranscribe()
