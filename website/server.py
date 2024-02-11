@@ -5,6 +5,10 @@ import json
 #from getIP import getIP
 from uAio import *
 
+from uTranscribe import *
+# set up transcriber
+myTranscriber = uTranscribe()
+
 async def handle(request):
     with open("index.html", "r") as f:
         html_content = f.read()
@@ -30,14 +34,17 @@ async def handlePost(request):
 
     ''' Recording '''
     if data['action'] == "startRecording":
-        print(now.ctime())
+        print(datetime.now().ctime())
+        myTranscriber.startRecording()
         rData['item'] = "startRecording"
-        rData['status'] = now.ctime() # a string representing the current time
+        rData['status'] = datetime.now().ctime() # a string representing the current time
 
     if data['action'] == "stopRecording":
-        print(now.ctime())
+        print(datetime.now().ctime())
+        await asyncio.sleep(5) # wait 5 seconds to stop recording
+        myTranscriber.stopRecording()
         rData['item'] = "stopRecording"
-        rData['status'] = now.ctime() # a string representing the current time
+        rData['status'] = datetime.now().ctime() # a string representing the current time
     
     response = json.dumps(rData)
     print("Response: ", response)

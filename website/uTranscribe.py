@@ -35,6 +35,11 @@ class uTranscribe:
             ftype = "txt"
         return f"{self.audioDir}{prefix}{str(n).zfill(4)}.{ftype}"
 
+    def writeFinalTranscript(self):
+        with open(f"{self.audioDir}finalTranscript.txt", "w") as f:
+            f.write(self.transcript)
+
+
     def callback(self, indata, frames, t, status):
         # global ct
         # global startTime
@@ -78,6 +83,7 @@ class uTranscribe:
 
     def stop(self):
         sd.stop()
+        self.writeFinalTranscript()
         print("Done")
         print(self.transcript)
         return(self.transcript)
