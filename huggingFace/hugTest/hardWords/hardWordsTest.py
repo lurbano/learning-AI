@@ -1,4 +1,7 @@
+# ref: https://huggingface.co/docs/transformers/en/chat_templating
+
 from transformers import pipeline
+
 
 pipe = pipeline("conversational", "HuggingFaceH4/zephyr-7b-beta")
 messages = [
