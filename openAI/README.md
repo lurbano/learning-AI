@@ -6,13 +6,14 @@
 
 virtual environment
 ```
-python -m venv openai-env
-source openai-env/bin/activate
+cd openAI
+python3 -m venv .env
+source .env/bin/activate
 ```
 
 openai
 ```
-pip install --upgrade openai
+pip3 install --upgrade openai
 ```
 
 get API key (you have to put money on the account to get it to work, it seems)
@@ -45,11 +46,15 @@ Speech to Text
 ## Testing
 
 * Record an audio clip (.wav) (5 sec):
-```
+```bash
 python3 recordingTest.py
 ```
 * Send to OpenAI Whisper to get transcript:
-```
+```bash
 python3 whisperTest.py
 ```
 
+* Extract difficult terms/words
+```bash
+python3 openai-hardWords.py
+```
