@@ -93,6 +93,10 @@ python3 ttsTest4.py
 ```bash
 python3 transcribe2.py
 ```
+or using the uTranscribe class test with:
+```bash
+python3 uTranscribe.py
+```
 
 ## webserver
 ```

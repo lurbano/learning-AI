@@ -11,6 +11,11 @@
 
     <input id="lightLevelButton" type="button" value="Get Light Level From Makerspace Testing PicoW">
     <div id="MkspPhotoResistor"></div>
+
+    <div>
+        <input id="startRecording" type="button" value="Start Recording">
+        <input id="stopRecording" type="button" value="Stop Recording">
+    </div>
 </body>
 
 <script>
@@ -34,6 +39,11 @@
                     console.log("Light Level: ", data["status"]);
                     MkspPhotoResistor.innerText = data["status"];
                 }
+
+                if (data["item"] == "startRecording" || data["item"] == "stopRecording") {
+                    console.log("Redording:", data["item"], data["status"]);
+                    
+                }
             }
         }
         let data = {};
@@ -49,6 +59,12 @@
     })
     lightLevelButton.addEventListener("click", function(){
         sendRequest("/", "photoResistor");
+    })
+    startRecording.addEventListener("click", function(){
+        sendRequest("/", "startRecording");
+    })
+    stopRecording.addEventListener("click", function(){
+        sendRequest("/", "stopRecording");
     })
 
 </script>

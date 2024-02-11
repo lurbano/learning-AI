@@ -27,6 +27,17 @@ async def handlePost(request):
         info = await postRequest("20.1.0.96:80", action="photoResistor", value="")
         print("Requested from pr Pico: ", info)
         rData = json.loads(info)
+
+    ''' Recording '''
+    if data['action'] == "startRecording":
+        print(now.ctime())
+        rData['item'] = "startRecording"
+        rData['status'] = now.ctime() # a string representing the current time
+
+    if data['action'] == "stopRecording":
+        print(now.ctime())
+        rData['item'] = "stopRecording"
+        rData['status'] = now.ctime() # a string representing the current time
     
     response = json.dumps(rData)
     print("Response: ", response)
