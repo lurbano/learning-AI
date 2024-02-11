@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="button" id = "timeBut" value="Get Time">
+    <div id="timeSlot">Time</div>
+
+    <input id="lightLevelButton" type="button" value="Get Light Level From Makerspace Testing PicoW">
+    <div id="MkspPhotoResistor"></div>
+</body>
+
+<script>
+    function sendRequest(target, action, value="") {
+        console.log("making request")
+        let xR = new XMLHttpRequest();
+        xR.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                
+                console.log("Server Response:", this.responseText);
+                data = JSON.parse(this.responseText);
+                console.log("data:", data);
+                console.log("data['item']:", data["item"]);
+                
+                //Handle responses
+                if (data["item"] == "time") {
+                    console.log("Got the time: ", data["status"]);
+                    timeSlot.innerText = data["status"];
+                }
+                if (data["item"] == "photoResistor") {
+                    console.log("Light Level: ", data["status"]);
+                    MkspPhotoResistor.innerText = data["status"];
+                }
+            }
+        }
+        let data = {};
+        data["action"] = action;
+        data["value"] = value;
+        console.log("data:", data);
+        xR.open("POST", target, true);
+        xR.send(JSON.stringify(data));
+    }
+
+    timeBut.addEventListener("click", function(){
+        sendRequest("/", "getTime");
+    })
+    lightLevelButton.addEventListener("click", function(){
+        sendRequest("/", "photoResistor");
+    })
+
+</script>
+
+</html>
