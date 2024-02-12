@@ -2,7 +2,7 @@ import asyncio
 from aiohttp import web, ClientSession
 from datetime import datetime
 import json
-#from getIP import getIP
+from openai import OpenAI
 from uAio import *
 
 from uTranscribe import *
@@ -17,7 +17,7 @@ async def handle(request):
 async def handlePost(request):
     data = await request.json()
     rData = {}
-    print(data)
+    # print(data)
     # print(data["action"], data["value"])
 
     if data['action'] == "getTime":
@@ -47,19 +47,44 @@ async def handlePost(request):
         rData['status'] = datetime.now().ctime() # a string representing the current time
 
     if data['action'] == "lastCaption":
-        print("Last Caption")
+        #print("Last Caption")
         rData['item'] = "lastCaption"
         rData['status'] = myTranscriber.transcriptList[-1]
 
     if data['action'] == "getTranscript":
-        print("Full Transcript")
+        #print("Full Transcript")
         rData['item'] = "getTranscript"
         rData['status'] = " <br> ".join(myTranscriber.transcriptList)
 
+    if data['action'] == "hardWords":
+        # hardWordsList = await getHardWords(data['value'])
+        rData['item'] = "hardWords"
+        rData['status'] = await getHardWords(data['value'])
+
     
     response = json.dumps(rData)
-    print("Response: ", response)
+    # print("Response: ", response)
     return web.Response(text=response, content_type='text/html')
+
+
+async def captionsPage(request):
+    with open("captions.html", "r") as f:
+        html_content = f.read()
+    return web.Response(text=html_content, content_type='text/html')
+
+async def getHardWords(inputText, gradeLevel = "high school student"):
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a vocabulary assistant in a 9th grade classroom that returns a list of words and definitions in JSON format."},
+            {"role": "user", "content": f"give me definitions of the words in the following passage that a typical {gradeLevel} would find difficult: {inputText}"}
+        ]
+    )
+    termList = completion.choices[0].message.content
+    #termList = json.loads(termList)
+    return termList
+
 
 # print "Hello" every 1 second (testing async)
 async def print_hello():
@@ -83,6 +108,8 @@ async def main():
     app = web.Application()
     app.router.add_get('/', handle)
     app.router.add_post("/", handlePost)
+    app.router.add_get("/captions", captionsPage)
+    app.router.add_static('/static', 'static')
     
     runner = web.AppRunner(app)
     await runner.setup()
@@ -94,6 +121,7 @@ async def main():
 
     asyncio.create_task(print_hello())
     # asyncio.create_task(getLightLevel(dt=5))
+    # asyncio.create_task(myTranscriber.findHardWords("This sentence"))
 
     '''Testing post request'''
     # await postRequest("192.168.1.142:8000", action="Rhythmbox", value="play")

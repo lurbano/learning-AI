@@ -4,7 +4,9 @@ import numpy as np
 import time
 from transformers import pipeline
 import subprocess
+import asyncio
 import glob
+from openai import OpenAI
 
 class uTranscribe:
 
@@ -25,6 +27,9 @@ class uTranscribe:
         self.transcript = ''
         self.lastTranscriptFile = ""
         self.transcriptList = ["Initial"]
+        self.transcriptListLength = len(self.transcriptList)
+        self.hardWords = []
+        
 
         self.stream = sd.InputStream(callback=self.callback, channels=1)
 
@@ -110,6 +115,20 @@ class uTranscribe:
         print("Transcript: ", self.transcript)
         self.writeFinalTranscript()
         return self.transcript
+
+
+    # async def findHardWords(self, text):
+    #     # if there is a change to the transcriptList length
+    #     if len(self.transcriptList) > self.transcriptListLength:
+    #         self.transcriptListLength = len(self.transcriptList)
+    #         print("findHardWords: ")
+    #         client = OpenAI()
+
+    #     await asyncio.sleep(3)
+    #     print("found hard words")
+
+
+
 
     def listTranscriptFiles(self):
         path = f"./{self.audioDir}trans*.txt"

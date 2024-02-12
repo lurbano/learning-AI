@@ -1,10 +1,13 @@
 from openai import OpenAI
 import json
+import time
 client = OpenAI()
 
 gradeLevel = "high school student"
 inputText = '''Geomagnetism is one of the oldest geophysical sciences. Geomagnetic fields have been observed and used since ancient times, and are still used for modern applications in navigation and mineral exploration. NCEI develops and distributes models of the geomagnetic field and maintains archives of geomagnetic data to further the understanding of Earth magnetism and the Sun-Earth environment.'''
 
+print("Starting")
+startTime = time.monotonic()
 completion = client.chat.completions.create(
   model="gpt-3.5-turbo",
   messages=[
@@ -12,6 +15,9 @@ completion = client.chat.completions.create(
     {"role": "user", "content": f"give me definitions of the words in the following passage that a typical {gradeLevel} would find difficult: {inputText}"}
   ]
 )
+dt = time.monotonic() - startTime
+print("Time taken:", dt)
+print()
 
 print(completion.choices[0].message)
 print()

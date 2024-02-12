@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hardWordWord{
+            background-color: palegoldenrod;
+            font-size: large;
+        }
+        .hardWordDef{
+            background-color: lightseagreen;
+        }
+        .hardWordItem {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        
+        <input id="showCaptions" type="button" value="Show Captions">
+        <div id="captions">Today we'll talk about geomagnetism and it's role in understanding plate tectonics.</div>
+
+        <input id="showTranscript" type="button" value="Show Transcript">
+        <div id="fullTranscript"></div>
+    </div>
+    <div>
+        <input id="findHardWords" type="button" value="Get Hard Words">
+        <div id="hardWordsBasic"></div>
+        <div id="hardWords"></div>
+    </div>
+</body>
+
+<script>
+    var d = document;
+    hardWordsList = {};
+    function sendRequest(target, action, value="") {
+        console.log("making request")
+        let xR = new XMLHttpRequest();
+        xR.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                
+                console.log("Server Response:", this.responseText);
+                data = JSON.parse(this.responseText);
+                console.log("data:", data);
+                console.log("data['item']:", data["item"]);
+                
+                //Handle responses
+                if (data["item"] == "lastCaption") {
+                    console.log("Caption:", data["status"])
+                    captions.innerText = data["status"];
+                }
+
+                if (data["item"] == "getTranscript") {
+                    console.log("Caption:", data["status"])
+                    fullTranscript.innerHTML = data["status"];
+                }
+
+                if (data["item"] == "hardWords") {
+                    console.log("Hard Words:", data["status"]);
+                    hardWordsBasic.innerHTML = data["status"];
+                    let hw = JSON.parse(data["status"]);
+                    
+                    for (const [key, value] of Object.entries(hw)) {
+                        console.log(`${key}: ${value}`);
+                        addHardWord(key, value);
+                    }
+                }
+            }
+        }
+        let data = {};
+        data["action"] = action;
+        data["value"] = value;
+        console.log("data:", data);
+        xR.open("POST", target, true);
+        xR.send(JSON.stringify(data));
+    }
+
+    function addHardWord(word, definition){
+        let hDiv = d.createElement("div");
+        let wordSpan = d.createElement("span");
+        let defSpan = d.createElement("span");
+
+        wordSpan.innerText = word;
+        wordSpan.classList.add("hardWordWord");
+        defSpan.innerText = definition;
+        defSpan.classList.add("hardWordDef");
+
+        hDiv.classList.add("hardWordItem");
+        hDiv.append(wordSpan);
+        hDiv.append(defSpan);
+        hardWords.append(hDiv);
+    }
+
+    function getCaptions(){
+        sendRequest("/", "lastCaption");
+    }
+    function getTranscript(){
+        sendRequest("/", "getTranscript");
+    }
+
+    showCaptions.addEventListener("click", function(){
+        getCaptions();
+    })
+    showTranscript.addEventListener("click", function(){
+       getTranscript();
+    })
+
+    window.onload = (event) => {
+        console.log("page is fully loaded");
+        // captionUpdates = setInterval(getCaptions, 1000);
+        // transcriptUpdates = setInterval(getTranscript, 1000);
+
+        // txt = `{\n  "geomagnetism": "The branch of science that studies the Earth's magnetic field and its interaction with the Earth's interior, atmosphere, and space environment.",\n  "plate tectonics": "The scientific theory that explains the movement of Earth's lithosphere (the rigid outer layer of the Earth) in separate pieces called plates. These plates interact with each other, causing earthquakes, volcanic activity, and the formation of mountain ranges.",\n  "understanding": "The ability to comprehend or grasp the meaning or significance of something."\n}`
+        // hw = JSON.parse(txt);
+        // console.log("hw", hw);
+        
+    };  
+
+    function getHardWords(txt){
+        sendRequest("/", "hardWords", txt);
+    }
+
+    findHardWords.addEventListener("click", function(){
+        getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
+    })
+
+</script>
+
+</html>
