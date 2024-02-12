@@ -72,7 +72,15 @@ async def captionsPage(request):
         html_content = f.read()
     return web.Response(text=html_content, content_type='text/html')
 
+async def hardWordsPage(request):
+    with open("hardWords.html", "r") as f:
+        html_content = f.read()
+    return web.Response(text=html_content, content_type='text/html')
+
+
+
 async def getHardWords(inputText, gradeLevel = "high school student"):
+    print("OpenAI:", inputText)
     client = OpenAI()
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -82,7 +90,11 @@ async def getHardWords(inputText, gradeLevel = "high school student"):
         ]
     )
     termList = completion.choices[0].message.content
-    #termList = json.loads(termList)
+    termListA = json.loads(termList)
+    n = 0
+    for term, definition in termListA.items():
+        n+=1
+        print(f"  {n}: {term}: {definition}")
     return termList
 
 
@@ -109,6 +121,7 @@ async def main():
     app.router.add_get('/', handle)
     app.router.add_post("/", handlePost)
     app.router.add_get("/captions", captionsPage)
+    app.router.add_get("/hardWords", hardWordsPage)
     app.router.add_static('/static', 'static')
     
     runner = web.AppRunner(app)
