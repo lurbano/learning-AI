@@ -80,7 +80,11 @@
 
                 if (data["item"] == "nHardWords") {
                     console.log("Number of hard words: ", data["status"], data["status"] !== nHardWords)
-                    if (data["status"] !== nHardWords)
+                    if (data["status"] !== nHardWords){
+                        console.log("GET HARD WORDS LIST")
+                        sendRequest("/", "hardWords", nHardWords);
+                        nHardWords = data["status"];
+                    }
                 }
 
                 if (data["item"] == "hardWords") {
@@ -144,6 +148,9 @@
     function getTranscript(){
         sendRequest("/", "getTranscript");
     }
+    function get_nHardWords(){
+        sendRequest("/", "nHardWords");
+    }
 
     showCaptions.addEventListener("click", function(){
         getCaptions();
@@ -155,6 +162,7 @@
     window.onload = (event) => {
         console.log("page is fully loaded");
         captionUpdates = setInterval(getCaptions, 1000);
+        hardWordsUpdates = setInterval(get_nHardWords,500);
         // transcriptUpdates = setInterval(getTranscript, 1000);
 
         // txt = `{\n  "geomagnetism": "The branch of science that studies the Earth's magnetic field and its interaction with the Earth's interior, atmosphere, and space environment.",\n  "plate tectonics": "The scientific theory that explains the movement of Earth's lithosphere (the rigid outer layer of the Earth) in separate pieces called plates. These plates interact with each other, causing earthquakes, volcanic activity, and the formation of mountain ranges.",\n  "understanding": "The ability to comprehend or grasp the meaning or significance of something."\n}`

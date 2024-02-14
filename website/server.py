@@ -62,6 +62,12 @@ async def handlePost(request):
         # rData['status'] = await getHardWords(data['value'])
         rData['status'] = myTranscriber.hardWordsDict
 
+    if data['action'] == "nHardWords":
+        # hardWordsList = await getHardWords(data['value'])
+        rData['item'] = "nHardWords"
+        # rData['status'] = await getHardWords(data['value'])
+        rData['status'] = len(myTranscriber.hardWordsDict)
+
     
     response = json.dumps(rData)
     # print("Response: ", response)
