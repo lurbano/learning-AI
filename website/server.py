@@ -59,7 +59,8 @@ async def handlePost(request):
     if data['action'] == "hardWords":
         # hardWordsList = await getHardWords(data['value'])
         rData['item'] = "hardWords"
-        rData['status'] = await getHardWords(data['value'])
+        # rData['status'] = await getHardWords(data['value'])
+        rData['status'] = myTranscriber.hardWordsDict
 
     
     response = json.dumps(rData)
@@ -85,21 +86,30 @@ async def getHardWords(inputText, gradeLevel = "high school student"):
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a vocabulary assistant in a 9th grade classroom that returns a list of words and definitions in JSON format."},
+            {"role": "system", "content": "You are a vocabulary assistant in a 9th grade classroom that returns a list of difficult words and definitions in JSON format."},
             {"role": "user", "content": f"give me definitions of the words in the following passage that a typical {gradeLevel} would find difficult: {inputText}"}
         ]
     )
-    termList = completion.choices[0].message.content
-    termListA = json.loads(termList)
-    n = 0
-    for term, definition in termListA.items():
-        n+=1
-        print(f"  {n}: {term}: {definition}")
-    return termList
+    try:
+        termList = completion.choices[0].message.content
+        print()
+        print("TermList")
+        print(termList)
+        print()
+        termListA = json.loads(termList)
+        n = 0
+        for term, definition in termListA.items():
+            n+=1
+            print(f"  {n}: {term}: {definition}")
+            myTranscriber.hardWordsDict[term] = definition
+        return termList
+    except:
+        return {}
 
 
 async def checkHardWords():
     nHardWordsList = 0
+    checkTxt = ""
     while True:
         if len(myTranscriber.transcriptList) > nHardWordsList:
             txt = myTranscriber.transcriptList[-1].strip()
@@ -107,9 +117,21 @@ async def checkHardWords():
                 nHardWordsList = len(myTranscriber.transcriptList)
                 print("New Text:", myTranscriber.transcriptList[-1])
                 ''' Check to see if we need to find hard words'''
+                tmpTxt = "" + txt
+                checkTxt += txt
                 
                 if hasLongWords(txt, 5):
                     print("  Has Long Words")
+                    hardW = await getHardWords(checkTxt)
+                    print()
+                    print("Hard Words Dictionary")
+                    myTranscriber.printHardsWordsDict()
+                    print()
+                    
+                    checkTxt = ""
+                else:
+                    print("  No Long Words")
+                    
 
         await asyncio.sleep(0.25) 
 

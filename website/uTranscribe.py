@@ -31,10 +31,16 @@ class uTranscribe:
 
         self.hardWordsString = ""
         self.hardWords = []
+        self.hardWordsDict = {}
         
 
         self.stream = sd.InputStream(callback=self.callback, channels=1)
 
+    def printHardsWordsDict(self):
+        n = 0
+        for term, definition in self.hardWordsDict.items():
+            n += 1
+            print(f"  {n}: {term}: {definition}")
 
     def fname(self, n, kind="rec"):
         if kind == "rec":

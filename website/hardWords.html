@@ -46,6 +46,7 @@
     var d = document;
     var hardWordsString = "";
     var hardWordsDict = {};
+    var nHardWords = 0;
     var currentCaption = "Initial";
     function sendRequest(target, action, value="") {
         console.log("making request")
@@ -75,6 +76,11 @@
                 if (data["item"] == "getTranscript") {
                     console.log("Caption:", data["status"])
                     fullTranscript.innerHTML = data["status"];
+                }
+
+                if (data["item"] == "nHardWords") {
+                    console.log("Number of hard words: ", data["status"], data["status"] !== nHardWords)
+                    if (data["status"] !== nHardWords)
                 }
 
                 if (data["item"] == "hardWords") {
@@ -176,7 +182,8 @@
     }
 
     findHardWords.addEventListener("click", function(){
-        getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
+        // getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
+        sendRequest("/", "hardWords");
     })
 
 
