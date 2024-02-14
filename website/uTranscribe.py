@@ -28,6 +28,8 @@ class uTranscribe:
         self.lastTranscriptFile = ""
         self.transcriptList = ["Initial"]
         self.transcriptListLength = len(self.transcriptList)
+
+        self.hardWordsString = ""
         self.hardWords = []
         
 
