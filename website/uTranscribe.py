@@ -155,7 +155,11 @@ class uTranscribe:
             print("No file")
             return ""
     
-
+def hasLongWords(txt, maxLength=5):
+    for word in txt.split():
+        if len(word) > maxLength:
+            return True
+    return False
 
 if __name__ == "__main__":
     myTranscriber = uTranscribe()

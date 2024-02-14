@@ -98,6 +98,22 @@ async def getHardWords(inputText, gradeLevel = "high school student"):
     return termList
 
 
+async def checkHardWords():
+    nHardWordsList = 0
+    while True:
+        if len(myTranscriber.transcriptList) > nHardWordsList:
+            txt = myTranscriber.transcriptList[-1].strip()
+            if txt != "Initial" and txt != "Starting":
+                nHardWordsList = len(myTranscriber.transcriptList)
+                print("New Text:", myTranscriber.transcriptList[-1])
+                ''' Check to see if we need to find hard words'''
+                
+                if hasLongWords(txt, 5):
+                    print("  Has Long Words")
+
+        await asyncio.sleep(0.25) 
+
+
 # print "Hello" every 1 second (testing async)
 async def print_hello():
     while True:
@@ -122,7 +138,7 @@ async def main():
     app.router.add_post("/", handlePost)
     app.router.add_get("/captions", captionsPage)
     app.router.add_get("/hardWords", hardWordsPage)
-    app.router.add_static('/static', 'static')
+    # app.router.add_static('/static', 'static')
     
     runner = web.AppRunner(app)
     await runner.setup()
@@ -132,7 +148,8 @@ async def main():
     await site.start()
     print(f"Server running at http://{host}:8080/")
 
-    asyncio.create_task(print_hello())
+    # asyncio.create_task(print_hello())
+    asyncio.create_task(checkHardWords())
     # asyncio.create_task(getLightLevel(dt=5))
     # asyncio.create_task(myTranscriber.findHardWords("This sentence"))
 
