@@ -90,7 +90,8 @@
                 if (data["item"] == "hardWords") {
                     console.log("Hard Words:", data["status"]);
                     hardWordsBasic.innerHTML = data["status"];
-                    let hw = JSON.parse(data["status"]);
+                    // let hw = JSON.parse(data["status"]);
+                    hw = data["status"];
                     
                     for (const [key, value] of Object.entries(hw)) {
                         console.log(`${key}: ${value}`);
