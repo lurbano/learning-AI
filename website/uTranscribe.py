@@ -7,6 +7,7 @@ import subprocess
 import asyncio
 import glob
 from openai import OpenAI
+import json
 
 class uTranscribe:
 
@@ -32,6 +33,7 @@ class uTranscribe:
         self.hardWordsString = ""
         self.hardWords = []
         self.hardWordsDict = {}
+        self.hardWordsTasks = []
         
 
         self.stream = sd.InputStream(callback=self.callback, channels=1)
@@ -77,6 +79,8 @@ class uTranscribe:
             self.lastTranscriptFile = tfileName
             self.transcriptList.append(x['text'])
             self.transcript += x['text']
+            asyncio.run(self.checkHardWords(x['text']))
+            # self.hardWordsTasks.append(asyncio.create_task(self.checkHardWords(x['text'])))
             #wavio.write(filename, indata[0], sample_rate, sampwidth=3)
             print(f"Audio saved to {filename}")
             self.audioData = np.array([])
@@ -125,15 +129,55 @@ class uTranscribe:
         return self.transcript
 
 
-    # async def findHardWords(self, text):
-    #     # if there is a change to the transcriptList length
-    #     if len(self.transcriptList) > self.transcriptListLength:
-    #         self.transcriptListLength = len(self.transcriptList)
-    #         print("findHardWords: ")
-    #         client = OpenAI()
-
-    #     await asyncio.sleep(3)
-    #     print("found hard words")
+    async def checkHardWords(self, txt):
+        nHardWordsList = 0
+        checkTxt = ""
+        # txt = self.transcriptList[-1].strip()
+        if txt != "Initial" and txt != "Starting":
+            nHardWordsList = len(self.transcriptList)
+            print("New Text:", self.transcriptList[-1])
+            ''' Check to see if we need to find hard words'''
+            tmpTxt = "" + txt
+            checkTxt += txt
+            
+            if hasLongWords(txt, 5):
+                print("  Has Long Words")
+                hardW = await self.getHardWords(checkTxt)
+                print()
+                print("Hard Words Dictionary")
+                self.printHardsWordsDict()
+                print()
+                
+                checkTxt = ""
+            else:
+                print("  No Long Words")
+                    
+    async def getHardWords(self, inputText, gradeLevel = "undergraduate", courseType="scientific"):
+        print("Sending to OpenAI:", inputText)
+        client = OpenAI()
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a note-taking assistant to a {gradeLevel} student that only returns a list of {courseType} terms, with their definitions in word:definition JSON format."},
+                {"role": "user", "content": f"give me definitions of the {courseType} words in the following passage that a {gradeLevel} student would find difficult: {inputText}"}
+            ]
+        )
+        try:
+            termList = completion.choices[0].message.content
+            print()
+            print("TermList")
+            print(termList)
+            print()
+            termListA = json.loads(termList)
+            n = 0
+            for term, definition in termListA.items():
+                n+=1
+                print(f"  {n}: {term}: {definition}")
+                if not term in self.hardWordsDict:
+                    self.hardWordsDict[term] = definition
+            return termList
+        except:
+            return {}
 
 
 

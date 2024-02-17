@@ -86,60 +86,60 @@ async def hardWordsPage(request):
 
 
 
-async def getHardWords(inputText, gradeLevel = "high school student"):
-    print("OpenAI:", inputText)
-    client = OpenAI()
-    completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a vocabulary assistant in a 9th grade classroom that returns a list of difficult words and definitions in JSON format."},
-            {"role": "user", "content": f"give me definitions of the words in the following passage that a typical {gradeLevel} would find difficult: {inputText}"}
-        ]
-    )
-    try:
-        termList = completion.choices[0].message.content
-        print()
-        print("TermList")
-        print(termList)
-        print()
-        termListA = json.loads(termList)
-        n = 0
-        for term, definition in termListA.items():
-            n+=1
-            print(f"  {n}: {term}: {definition}")
-            myTranscriber.hardWordsDict[term] = definition
-        return termList
-    except:
-        return {}
+# async def getHardWords(inputText, gradeLevel = "undergraduate", courseType="scientific"):
+#     print("OpenAI:", inputText)
+#     client = OpenAI()
+#     completion = client.chat.completions.create(
+#         model="gpt-3.5-turbo",
+#         messages=[
+#             {"role": "system", "content": "You are a note-taking assistant to a {gradeLevel} student that only returns a list of {courseType} terms that they might not know, with their definitions in word:definition JSON format."},
+#             {"role": "user", "content": f"give me definitions of the {courseType} words in the following passage that a gifted {gradeLevel} student would find difficult: {inputText}"}
+#         ]
+#     )
+#     try:
+#         termList = completion.choices[0].message.content
+#         print()
+#         print("TermList")
+#         print(termList)
+#         print()
+#         termListA = json.loads(termList)
+#         n = 0
+#         for term, definition in termListA.items():
+#             n+=1
+#             print(f"  {n}: {term}: {definition}")
+#             myTranscriber.hardWordsDict[term] = definition
+#         return termList
+#     except:
+#         return {}
 
 
-async def checkHardWords():
-    nHardWordsList = 0
-    checkTxt = ""
-    while True:
-        if len(myTranscriber.transcriptList) > nHardWordsList:
-            txt = myTranscriber.transcriptList[-1].strip()
-            if txt != "Initial" and txt != "Starting":
-                nHardWordsList = len(myTranscriber.transcriptList)
-                print("New Text:", myTranscriber.transcriptList[-1])
-                ''' Check to see if we need to find hard words'''
-                tmpTxt = "" + txt
-                checkTxt += txt
+# async def checkHardWords():
+#     nHardWordsList = 0
+#     checkTxt = ""
+#     while True:
+#         if len(myTranscriber.transcriptList) > nHardWordsList:
+#             txt = myTranscriber.transcriptList[-1].strip()
+#             if txt != "Initial" and txt != "Starting":
+#                 nHardWordsList = len(myTranscriber.transcriptList)
+#                 print("New Text:", myTranscriber.transcriptList[-1])
+#                 ''' Check to see if we need to find hard words'''
+#                 tmpTxt = "" + txt
+#                 checkTxt += txt
                 
-                if hasLongWords(txt, 5):
-                    print("  Has Long Words")
-                    hardW = await getHardWords(checkTxt)
-                    print()
-                    print("Hard Words Dictionary")
-                    myTranscriber.printHardsWordsDict()
-                    print()
+#                 if hasLongWords(txt, 5):
+#                     print("  Has Long Words")
+#                     hardW = await getHardWords(checkTxt)
+#                     print()
+#                     print("Hard Words Dictionary")
+#                     myTranscriber.printHardsWordsDict()
+#                     print()
                     
-                    checkTxt = ""
-                else:
-                    print("  No Long Words")
+#                     checkTxt = ""
+#                 else:
+#                     print("  No Long Words")
                     
 
-        await asyncio.sleep(0.25) 
+#         await asyncio.sleep(0.25) 
 
 
 # print "Hello" every 1 second (testing async)
@@ -177,7 +177,10 @@ async def main():
     print(f"Server running at http://{host}:8080/")
 
     # asyncio.create_task(print_hello())
-    asyncio.create_task(checkHardWords())
+    '''    '''
+    # asyncio.create_task(checkHardWords())
+
+
     # asyncio.create_task(getLightLevel(dt=5))
     # asyncio.create_task(myTranscriber.findHardWords("This sentence"))
 

@@ -37,7 +37,10 @@
     </div>
     <div>
         <input id="findHardWords" type="button" value="Get Hard Words">
-        <div id="hardWordsBasic"></div>
+        <input id="monitorHardWords" type="button" value="Stop Monitoring For Hard Words">
+        <!-- <div id="hardWordsBasic"></div> -->
+        <br>
+        <input id="clearAllHardWords" type="button" value="Clear All Hard Words">
         <div id="hardWords"></div>
     </div>
 </body>
@@ -47,7 +50,8 @@
     var hardWordsString = "";
     var hardWordsDict = {};
     var nHardWords = 0;
-    var currentCaption = "Initial";
+    var l_hardWordsMonitor = true;
+    var currentCaption = "";
     function sendRequest(target, action, value="") {
         console.log("making request")
         let xR = new XMLHttpRequest();
@@ -62,13 +66,13 @@
                 //Handle responses
                 if (data["item"] == "lastCaption") {
                     if (data['status'] !== currentCaption && 
-                    data['status'] !== "" &&
-                    data['status'] !== "Starting" && 
-                    data['status'] !== "Initial" ){
+                    data['status'] !== "" ) { //&&
+                    // data['status'] !== "Starting" && 
+                    // data['status'] !== "Initial" ){
                         currentCaption = data["status"];
                         console.log("Caption:", data["status"])
                         captions.innerText = data["status"];
-                        getHardWords(data['status']);
+                        // getHardWords(data['status']);
                     }
                    
                 }
@@ -89,7 +93,7 @@
 
                 if (data["item"] == "hardWords") {
                     console.log("Hard Words:", data["status"]);
-                    hardWordsBasic.innerHTML = data["status"];
+                    // hardWordsBasic.innerHTML = data["status"];
                     // let hw = JSON.parse(data["status"]);
                     hw = data["status"];
                     
@@ -162,9 +166,9 @@
 
     window.onload = (event) => {
         console.log("page is fully loaded");
+        // captionUpdates = setInterval(getCaptions, 1000);
+        hardWordsMonitor = setInterval(get_nHardWords, 1000);
         captionUpdates = setInterval(getCaptions, 1000);
-        hardWordsUpdates = setInterval(get_nHardWords,500);
-        // transcriptUpdates = setInterval(getTranscript, 1000);
 
         // txt = `{\n  "geomagnetism": "The branch of science that studies the Earth's magnetic field and its interaction with the Earth's interior, atmosphere, and space environment.",\n  "plate tectonics": "The scientific theory that explains the movement of Earth's lithosphere (the rigid outer layer of the Earth) in separate pieces called plates. These plates interact with each other, causing earthquakes, volcanic activity, and the formation of mountain ranges.",\n  "understanding": "The ability to comprehend or grasp the meaning or significance of something."\n}`
         // hw = JSON.parse(txt);
@@ -195,6 +199,26 @@
         sendRequest("/", "hardWords");
     })
 
+    monitorHardWords.addEventListener("click", function(){
+        console.log("l_hardWordsMonitor: ", l_hardWordsMonitor);
+        // getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
+        if (!l_hardWordsMonitor){
+            l_hardWordsMonitor = true;
+            hardWordsMonitor = setInterval(get_nHardWords, 1000);
+            captionUpdates = setInterval(getCaptions, 1000);
+            monitorHardWords.setAttribute("value", "Stop Monitoring for Hard Words");
+        } else {
+            l_hardWordsMonitor = false;
+            clearInterval(hardWordsMonitor);
+            clearInterval(captionUpdates);
+            monitorHardWords.setAttribute("value", "Start Monitoring for Hard Words");
+        }
+    })
+
+    clearAllHardWords.addEventListener("click", function(){
+        hardWordsDict = {};
+        d.getElementById("hardWords").innerHTML = "";
+    })
 
     //utility scripts
     function hasLongWords(inputString, maxLength) {
