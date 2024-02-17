@@ -68,7 +68,14 @@ async def handlePost(request):
         # rData['status'] = await getHardWords(data['value'])
         rData['status'] = len(myTranscriber.hardWordsDict)
 
-    
+    if data['action'] == "dialPercent":
+        id = data["value"]
+        val = await postRequest(addr=f"20.1.0.{id}", action="dialPercent")
+        val = json.loads(val)
+        rData['item'] = "dialPercent"
+        rData['status'] = val["status"]
+
+     
     response = json.dumps(rData)
     # print("Response: ", response)
     return web.Response(text=response, content_type='text/html')
@@ -81,6 +88,11 @@ async def captionsPage(request):
 
 async def hardWordsPage(request):
     with open("hardWords.html", "r") as f:
+        html_content = f.read()
+    return web.Response(text=html_content, content_type='text/html')
+
+async def studentPage(request):
+    with open("student.html", "r") as f:
         html_content = f.read()
     return web.Response(text=html_content, content_type='text/html')
 
@@ -166,6 +178,7 @@ async def main():
     app.router.add_post("/", handlePost)
     app.router.add_get("/captions", captionsPage)
     app.router.add_get("/hardWords", hardWordsPage)
+    app.router.add_get("/student", studentPage)
     # app.router.add_static('/static', 'static')
     
     runner = web.AppRunner(app)

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hardWordWord {
+            background-color: palegoldenrod;
+            font-size: large;
+            padding: 3px;
+        }
+
+        .hardWordDef {
+            background-color: lightskyblue;
+            padding: 3px;
+        }
+
+        .hardWordItem {
+            border: 2px solid black;
+            padding: 3px;
+            width: fit-content;
+            margin-top: 5px;
+        }
+
+        .xBut {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        Dial: 
+        <select id="dialNumber">
+            <option value="94" selected>94</option>
+            <option value="95">95</option>
+            <option value="96">96</option>
+            <option value="97">97</option>
+        </select>
+        <span id="dialVal">x</span>
+        <input id="monitorDial" type="button" value="Start Monitoring Dial">
+    </div>
+
+    <div>
+
+        <input id="showCaptions" type="button" value="Show Captions">
+        <div id="captions">Today we'll talk about geomagnetism and it's role in understanding plate tectonics.</div>
+
+        <input id="showTranscript" type="button" value="Show Transcript">
+        <div id="fullTranscript"></div>
+    </div>
+    <div>
+        <input id="findHardWords" type="button" value="Get Hard Words">
+        <input id="monitorHardWords" type="button" value="Start Monitoring For Hard Words">
+        <!-- <div id="hardWordsBasic"></div> -->
+        <br>
+        <input id="clearAllHardWords" type="button" value="Clear All Hard Words">
+        <div id="hardWords"></div>
+    </div>
+</body>
+
+<script>
+    var d = document;
+    var hardWordsString = "";
+    var hardWordsDict = {};
+    var nHardWords = 0;
+    var l_hardWordsMonitor = false;
+    var currentCaption = "";
+    var l_dialMonitor = false;
+
+    function sendRequest(target, action, value = "") {
+        console.log("making request")
+        let xR = new XMLHttpRequest();
+        xR.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                console.log("Server Response:", this.responseText);
+                data = JSON.parse(this.responseText);
+                console.log("data:", data);
+                console.log("data['item']:", data["item"]);
+
+                //Handle responses
+                if (data["item"] == "lastCaption") {
+                    if (data['status'] !== currentCaption &&
+                        data['status'] !== "") { //&&
+                        // data['status'] !== "Starting" && 
+                        // data['status'] !== "Initial" ){
+                        currentCaption = data["status"];
+                        console.log("Caption:", data["status"])
+                        captions.innerText = data["status"];
+                        // getHardWords(data['status']);
+                    }
+
+                }
+
+                if (data["item"] == "getTranscript") {
+                    console.log("Caption:", data["status"])
+                    fullTranscript.innerHTML = data["status"];
+                }
+
+                if (data["item"] == "nHardWords") {
+                    console.log("Number of hard words: ", data["status"], data["status"] !== nHardWords)
+                    if (data["status"] !== nHardWords) {
+                        console.log("GET HARD WORDS LIST")
+                        sendRequest("/", "hardWords", nHardWords);
+                        nHardWords = data["status"];
+                    }
+                }
+
+                if (data["item"] == "hardWords") {
+                    console.log("Hard Words:", data["status"]);
+                    // hardWordsBasic.innerHTML = data["status"];
+                    // let hw = JSON.parse(data["status"]);
+                    hw = data["status"];
+
+                    for (const [key, value] of Object.entries(hw)) {
+                        console.log(`${key}: ${value}`);
+                        addHardWord(key, value);
+                        //update the hardWordsDict
+                        hardWordsDict[key] = value;
+                    }
+
+                }
+
+                if (data["item"] == "dialPercent") {
+                    console.log("Dial: ", data["status"]);
+                    dialVal.innerText = data["status"];
+                    dialNumber.style.backgroundColor = "lightGreen";
+                }
+            }
+        }
+        let data = {};
+        data["action"] = action;
+        data["value"] = value;
+        console.log("data:", data);
+        xR.open("POST", target, true);
+        xR.send(JSON.stringify(data));
+    }
+
+    var buttonNum = 0;
+    function addHardWord(word, definition) {
+        let id = `hardWordButton_${buttonNum}`;
+        buttonNum += 1;
+
+        let hDiv = d.createElement("div");
+        let xButton = d.createElement("input")
+        let wordSpan = d.createElement("span");
+        let defSpan = d.createElement("span");
+
+        xButton.setAttribute("type", "button");
+        xButton.setAttribute("value", "X");
+        xButton.setAttribute("name", buttonNum);
+
+        xButton.classList.add("xBut");
+        wordSpan.innerText = word;
+        wordSpan.classList.add("hardWordWord");
+        defSpan.innerText = definition;
+        defSpan.classList.add("hardWordDef");
+
+        hDiv.classList.add("hardWordItem");
+        hDiv.setAttribute("id", `hdiv_${buttonNum}`);
+        hDiv.append(xButton);
+        hDiv.append(wordSpan);
+        hDiv.append(defSpan);
+        hardWords.append(hDiv);
+
+        xButton.addEventListener("click", function () {
+            this.parentElement.remove();
+        })
+    }
+
+    function getCaptions() {
+        sendRequest("/", "lastCaption");
+    }
+    function getTranscript() {
+        sendRequest("/", "getTranscript");
+    }
+    function get_nHardWords() {
+        sendRequest("/", "nHardWords");
+    }
+
+    showCaptions.addEventListener("click", function () {
+        getCaptions();
+    })
+    showTranscript.addEventListener("click", function () {
+        getTranscript();
+    })
+
+    window.onload = (event) => {
+        console.log("page is fully loaded");
+        // captionUpdates = setInterval(getCaptions, 1000);
+
+        startTxt = monitorHardWords.value.split(" ");
+        console.log("hardWords Monitor: startTxt: ", startTxt);
+        if (startTxt[0] !== "Start") {
+            hardWordsMonitor = setInterval(get_nHardWords, 1000);
+            captionUpdates = setInterval(getCaptions, 1000);
+        }
+        
+        mTxt = monitorDial.value.split(" ")
+        console.log("dialMonitor: mTxt", mTxt);
+        if (mTxt[0] !== "Start"){
+            dialMonitor = setInterval(dialCheck, 250);
+            l_dialMonitor = true;
+        }
+
+        dialID = dialNumber.value;
+        dialCheck(dialID);
+
+        // txt = `{\n  "geomagnetism": "The branch of science that studies the Earth's magnetic field and its interaction with the Earth's interior, atmosphere, and space environment.",\n  "plate tectonics": "The scientific theory that explains the movement of Earth's lithosphere (the rigid outer layer of the Earth) in separate pieces called plates. These plates interact with each other, causing earthquakes, volcanic activity, and the formation of mountain ranges.",\n  "understanding": "The ability to comprehend or grasp the meaning or significance of something."\n}`
+        // hw = JSON.parse(txt);
+        // console.log("hw", hw);
+
+    };
+
+    function getHardWords(txt) {
+        // remove current hard words from string to see if there is anything new
+        tmpStr = txt;
+        for (const [key, value] of Object.entries(hw)) {
+            tmpStr = removeWordFromString(tmpStr, key);
+        }
+
+        //check to see if we need to send to the server
+        if (!hasLongWords(tmpStr, maxLength = 5)) {
+            hardWordsString += txt;
+            sendRequest("/", "hardWords", hardWordsString);
+            hardWordsString = "";
+        } else {
+            hardWordsString += txt;
+        }
+
+    }
+
+    findHardWords.addEventListener("click", function () {
+        // getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
+        sendRequest("/", "hardWords");
+    })
+
+    monitorHardWords.addEventListener("click", function () {
+        console.log("l_hardWordsMonitor: ", l_hardWordsMonitor);
+        // getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
+        if (!l_hardWordsMonitor) {
+            l_hardWordsMonitor = true;
+            hardWordsMonitor = setInterval(get_nHardWords, 1000);
+            captionUpdates = setInterval(getCaptions, 1000);
+            monitorHardWords.setAttribute("value", "Stop Monitoring for Hard Words");
+        } else {
+            l_hardWordsMonitor = false;
+            clearInterval(hardWordsMonitor);
+            clearInterval(captionUpdates);
+            monitorHardWords.setAttribute("value", "Start Monitoring for Hard Words");
+        }
+    })
+
+    clearAllHardWords.addEventListener("click", function () {
+        hardWordsDict = {};
+        d.getElementById("hardWords").innerHTML = "";
+    })
+
+    //utility scripts
+    function hasLongWords(inputString, maxLength) {
+        const words = inputString.split(' ');
+        for (let word of words) {
+            if (word.length > maxLength) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function removeWordFromString(inputString, wordToRemove) {
+        // Create a regular expression to match the word
+        const regex = new RegExp('\\b' + wordToRemove + '\\b', 'gi');
+        // Replace the word with an empty string
+        return inputString.replace(regex, '');
+    }
+
+    // Dials
+    function dialCheck(id="94"){
+        sendRequest(`/`, "dialPercent", id);
+    }
+    dialNumber.addEventListener("change", function(){
+        this.style.backgroundColor = "salmon";
+        dialCheck(this.value);
+    })
+    monitorDial.addEventListener("click", function(){
+        if (l_dialMonitor) {
+            l_dialMonitor = false;
+            clearInterval(dialMonitor);
+            this.value = "Start Monitoring Dial";
+        } else {
+            l_dialMonitor = true;
+            dialMonitor = setInterval(dialCheck, 250);
+            this.value = "Stop Monitoring Dial";
+        }
+    })
+
+</script>
+
+</html>
