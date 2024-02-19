@@ -137,9 +137,12 @@ async def print_hello():
 
 ''' Get the light level (defaults to the MakerspaceNetwork Testing Pico)'''
 async def getLightLevel(addr='20.1.0.96:80'):
-    data = await postRequest(addr=f"{addr}", action="photoResistor")
-    data = json.loads(data)
-    return data['status']
+    try:
+        data = await postRequest(addr=f"{addr}", action="photoResistor")
+        data = json.loads(data)
+        return data['status']
+    except:
+        return "None"
 
 
 async def main():

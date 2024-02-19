@@ -34,7 +34,8 @@
 
     <div>
         <h3>Input</h3>
-        Dial: 
+        <input id="monitorDial" type="checkbox"> Monitor  
+        Dial #
         <select id="dialNumber">
             <option value="94" selected>94</option>
             <option value="95">95</option>
@@ -42,7 +43,8 @@
             <option value="97">97</option>
         </select>
         <span id="dialVal">x</span>
-        <input id="monitorDial" type="button" value="Start Monitoring Dial">
+        <!-- <input id="monitorDial" type="button" value="Start Monitoring Dial"> -->
+        
     </div>
 
     <div>
@@ -65,8 +67,10 @@
     <div>
         <h3>Hard Words</h3>
         <input id="findHardWords" type="button" value="Get Hard Words">
-        <input id="monitorHardWords" type="button" value="Start Monitoring For Hard Words">
+        <!-- <input id="monitorHardWords" type="button" value="Start Monitoring For Hard Words"> -->
         <!-- <div id="hardWordsBasic"></div> -->
+        <br>
+        Monitor Hard Words <input id="monitorHardWords" type="checkbox">
         <br>
         <input id="clearAllHardWords" type="button" value="Clear All Hard Words">
         <div id="hardWords"></div>
@@ -243,14 +247,14 @@
 
         startTxt = monitorHardWords.value.split(" ");
         console.log("hardWords Monitor: startTxt: ", startTxt);
-        if (startTxt[0] !== "Start") {
+        if (monitorHardWords.checked) {
             hardWordsMonitor = setInterval(get_nHardWords, 1000);
             captionUpdates = setInterval(getCaptions, 1000);
         }
         
-        mTxt = monitorDial.value.split(" ")
-        console.log("dialMonitor: mTxt", mTxt);
-        if (mTxt[0] !== "Start"){
+        // mTxt = monitorDial.value.split(" ")
+        console.log("dialMonitor:", monitorDial.checked);
+        if (monitorDial.checked){
             dialMonitor = setInterval(dialCheck, 250);
             l_dialMonitor = true;
         }
@@ -287,19 +291,18 @@
         sendRequest("/", "hardWords");
     })
 
-    monitorHardWords.addEventListener("click", function () {
-        console.log("l_hardWordsMonitor: ", l_hardWordsMonitor);
-        // getHardWords("Today we'll talk about geomagnetism and it's role in understanding plate tectonics.");
-        if (!l_hardWordsMonitor) {
-            l_hardWordsMonitor = true;
+
+    monitorHardWords.addEventListener("change", function () {
+        if (this.checked) {
             hardWordsMonitor = setInterval(get_nHardWords, 1000);
             captionUpdates = setInterval(getCaptions, 1000);
-            monitorHardWords.setAttribute("value", "Stop Monitoring for Hard Words");
         } else {
-            l_hardWordsMonitor = false;
-            clearInterval(hardWordsMonitor);
-            clearInterval(captionUpdates);
-            monitorHardWords.setAttribute("value", "Start Monitoring for Hard Words");
+            if (typeof hardWordsMonitor !== 'undefined'){
+                clearInterval(hardWordsMonitor);
+            }
+            if (typeof captionUpdates !== 'undefined') {
+                clearInterval(captionUpdates);
+            }
         }
     })
 
@@ -310,6 +313,7 @@
 
     //utility scripts
     function captionListTable(){
+        console.log("Table captionList:", captionList);
         let t = d.createElement('table');
         let tr = d.createElement('tr');
         let keys = Object.keys(captionList[0]);
@@ -362,15 +366,17 @@
         this.style.backgroundColor = "salmon";
         dialCheck(this.value);
     })
-    monitorDial.addEventListener("click", function(){
-        if (l_dialMonitor) {
-            l_dialMonitor = false;
-            clearInterval(dialMonitor);
-            this.value = "Start Monitoring Dial";
-        } else {
-            l_dialMonitor = true;
+
+    monitorDial.addEventListener("change", function(){
+        console.log("monitorDial event:", this.checked)
+        if (this.checked) {
             dialMonitor = setInterval(dialCheck, 250);
-            this.value = "Stop Monitoring Dial";
+            l_dialMonitor = false;
+        } else {
+            if (typeof dialMonitor !== 'undefined') {
+                clearInterval(dialMonitor);
+            }
+            l_dialMonitor = true;
         }
     })
 
