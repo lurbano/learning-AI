@@ -34,6 +34,7 @@ class uTranscribe:
         self.hardWords = []
         self.hardWordsDict = {}
         self.hardWordsTasks = []
+        self.doHardWords = True
         
 
         self.stream = sd.InputStream(callback=self.callback, channels=1)
@@ -79,7 +80,8 @@ class uTranscribe:
             self.lastTranscriptFile = tfileName
             self.transcriptList.append(x['text'])
             self.transcript += x['text']
-            asyncio.run(self.checkHardWords(x['text']))
+            if self.doHardWords:
+                asyncio.run(self.checkHardWords(x['text']))
             # self.hardWordsTasks.append(asyncio.create_task(self.checkHardWords(x['text'])))
             #wavio.write(filename, indata[0], sample_rate, sampwidth=3)
             print(f"Audio saved to {filename}")

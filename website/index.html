@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Control: AI</title>
 </head>
 <body>
     <input type="button" id = "timeBut" value="Get Time">
@@ -15,6 +15,8 @@
     <div>
         <input id="startRecording" type="button" value="Start Recording">
         <input id="stopRecording" type="button" value="Stop Recording">
+        <br>
+        Hard Words <input id="doHardWords" type="checkbox">
         <br>
         <input id="showCaptions" type="button" value="Show Captions">
         <div id="captions"></div>
@@ -92,7 +94,8 @@
         sendRequest("/", "photoResistor");
     })
     startRecording.addEventListener("click", function(){
-        sendRequest("/", "startRecording");
+        let val = {"doHardWords": doHardWords.checked};
+        sendRequest("/", "startRecording", val);
     })
     stopRecording.addEventListener("click", function(){
         sendRequest("/", "stopRecording");

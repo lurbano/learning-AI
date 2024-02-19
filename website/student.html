@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Student: AI</title>
     <style>
         .hardWordWord {
             background-color: palegoldenrod;
@@ -33,6 +33,7 @@
 <body>
 
     <div>
+        <h3>Input</h3>
         Dial: 
         <select id="dialNumber">
             <option value="94" selected>94</option>
@@ -45,14 +46,24 @@
     </div>
 
     <div>
+        <h3>Environment</h3>
+        <input id="lightLevelButton" type="button" value="Check Light Level">
+        <span id="lightLevelVal">Light Level</span>
+    </div>
 
+    <div>
+        <h3>Captions and Transcript</h3>
         <input id="showCaptions" type="button" value="Show Captions">
         <div id="captions">Today we'll talk about geomagnetism and it's role in understanding plate tectonics.</div>
 
         <input id="showTranscript" type="button" value="Show Transcript">
         <div id="fullTranscript"></div>
+
+        <input id="showTranscriptData" type="button" value="Show Transcript with Data">
+        <div id="transcriptData"></div>
     </div>
     <div>
+        <h3>Hard Words</h3>
         <input id="findHardWords" type="button" value="Get Hard Words">
         <input id="monitorHardWords" type="button" value="Start Monitoring For Hard Words">
         <!-- <div id="hardWordsBasic"></div> -->
@@ -69,6 +80,7 @@
     var nHardWords = 0;
     var l_hardWordsMonitor = false;
     var currentCaption = "";
+    var captionList = [];
     var l_dialMonitor = false;
 
     function sendRequest(target, action, value = "") {
@@ -91,6 +103,11 @@
                         currentCaption = data["status"];
                         console.log("Caption:", data["status"])
                         captions.innerText = data["status"];
+                        cap = {"caption": data["status"]};
+                        captionList.push(cap);
+                        console.log("Getting Light Level");
+                        sendRequest("/", "getLightLevel");
+                        sendRequest("/", "getDialPercent");
                         // getHardWords(data['status']);
                     }
 
@@ -118,9 +135,12 @@
 
                     for (const [key, value] of Object.entries(hw)) {
                         console.log(`${key}: ${value}`);
-                        addHardWord(key, value);
-                        //update the hardWordsDict
-                        hardWordsDict[key] = value;
+                        if (!(key in Object.keys(hw))){
+                            addHardWord(key, value);
+                            //update the hardWordsDict
+                            hardWordsDict[key] = value;
+                        }
+                        
                     }
 
                 }
@@ -129,6 +149,29 @@
                     console.log("Dial: ", data["status"]);
                     dialVal.innerText = data["status"];
                     dialNumber.style.backgroundColor = "lightGreen";
+                }
+
+                if (data["item"] == "getDialPercent") {
+                    console.log("Dial: ", data["status"]);
+                    dialVal.innerText = data["status"];
+                    dialNumber.style.backgroundColor = "lightGreen";
+                    captionList[captionList.length - 1]["dial"] = data["status"];
+                }
+
+
+                if (data["item"] == "photoResistor") {
+                    console.log("Light Level: ", data["status"]);
+                    lightLevelVal.innerText = data["status"];
+                    lightLevelVal.style.backgroundColor = "lightGreen";
+                }
+
+                if (data["item"] == "getLightLevel") {
+                    console.log("Get Light Level: ", data["status"]);
+                    lightLevelVal.innerText = data["status"];
+                    lightLevelVal.style.backgroundColor = "lightGreen";
+                    // console.log("1. captionList", captionList);
+                    captionList[captionList.length-1]["lightLevel"] = data["status"];
+                    console.log("captionList", captionList);
                 }
             }
         }
@@ -187,6 +230,11 @@
     })
     showTranscript.addEventListener("click", function () {
         getTranscript();
+    })
+    showTranscriptData.addEventListener("click", function(){
+        // transcriptData.innerText = JSON.stringify(captionList);
+        console.log("Table");
+        captionListTable(); 
     })
 
     window.onload = (event) => {
@@ -261,6 +309,34 @@
     })
 
     //utility scripts
+    function captionListTable(){
+        let t = d.createElement('table');
+        let tr = d.createElement('tr');
+        let keys = Object.keys(captionList[0]);
+        for (const key of keys) {
+            let th = d.createElement("th");
+            th.textContent = key;
+            tr.appendChild(th);
+        }
+        t.appendChild(tr);
+
+        for (let cap of captionList){
+            let tr = d.createElement("tr");
+            for (const key of keys) {
+                let td = d.createElement("td");
+                td.textContent = cap[key];
+                tr.appendChild(td);
+            }
+            t.appendChild(tr);
+        }
+
+        
+
+        transcriptData.appendChild(t);
+    }
+
+
+
     function hasLongWords(inputString, maxLength) {
         const words = inputString.split(' ');
         for (let word of words) {
@@ -296,6 +372,11 @@
             dialMonitor = setInterval(dialCheck, 250);
             this.value = "Stop Monitoring Dial";
         }
+    })
+
+    // Environmental
+    lightLevelButton.addEventListener("click", function(){
+        sendRequest("/", "photoResistor");
     })
 
 </script>

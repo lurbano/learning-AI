@@ -34,8 +34,13 @@ async def handlePost(request):
 
     ''' Recording '''
     if data['action'] == "startRecording":
-        print(datetime.now().ctime())
+        print("startRecording: doHardWords", data["value"]["doHardWords"])
+        print("Start Recording:", datetime.now().ctime())
+        # setup for hard words or not
+        myTranscriber.doHardWords = data["value"]["doHardWords"]
+        # start recording
         myTranscriber.startRecording()
+        # return info
         rData['item'] = "startRecording"
         rData['status'] = datetime.now().ctime() # a string representing the current time
 
@@ -69,11 +74,37 @@ async def handlePost(request):
         rData['status'] = len(myTranscriber.hardWordsDict)
 
     if data['action'] == "dialPercent":
-        id = data["value"]
-        val = await postRequest(addr=f"20.1.0.{id}", action="dialPercent")
-        val = json.loads(val)
-        rData['item'] = "dialPercent"
-        rData['status'] = val["status"]
+        try:
+            id = data["value"]
+            val = await postRequest(addr=f"20.1.0.{id}", action="dialPercent")
+            val = json.loads(val)
+            rData['item'] = "dialPercent"
+            rData['status'] = val["status"]
+        except:
+            rData['item'] = "dialPercent"
+            rData['status'] = "None"
+
+    if data['action'] == "getDialPercent":
+        try:
+            id = data["value"]
+            val = await postRequest(addr=f"20.1.0.{id}", action="dialPercent")
+            val = json.loads(val)
+            rData['item'] = data['action']
+            rData['status'] = val["status"]
+        except:
+            rData['item'] = data['action']
+            rData['status'] = "None"
+
+
+    if data['action'] == "getLightLevel":
+        try:
+            id = data["value"]
+            val = await getLightLevel()
+            rData['item'] = "getLightLevel"
+            rData['status'] = val
+        except:
+            rData['item'] = data['action']
+            rData['status'] = "None"
 
      
     response = json.dumps(rData)
@@ -98,78 +129,17 @@ async def studentPage(request):
 
 
 
-# async def getHardWords(inputText, gradeLevel = "undergraduate", courseType="scientific"):
-#     print("OpenAI:", inputText)
-#     client = OpenAI()
-#     completion = client.chat.completions.create(
-#         model="gpt-3.5-turbo",
-#         messages=[
-#             {"role": "system", "content": "You are a note-taking assistant to a {gradeLevel} student that only returns a list of {courseType} terms that they might not know, with their definitions in word:definition JSON format."},
-#             {"role": "user", "content": f"give me definitions of the {courseType} words in the following passage that a gifted {gradeLevel} student would find difficult: {inputText}"}
-#         ]
-#     )
-#     try:
-#         termList = completion.choices[0].message.content
-#         print()
-#         print("TermList")
-#         print(termList)
-#         print()
-#         termListA = json.loads(termList)
-#         n = 0
-#         for term, definition in termListA.items():
-#             n+=1
-#             print(f"  {n}: {term}: {definition}")
-#             myTranscriber.hardWordsDict[term] = definition
-#         return termList
-#     except:
-#         return {}
-
-
-# async def checkHardWords():
-#     nHardWordsList = 0
-#     checkTxt = ""
-#     while True:
-#         if len(myTranscriber.transcriptList) > nHardWordsList:
-#             txt = myTranscriber.transcriptList[-1].strip()
-#             if txt != "Initial" and txt != "Starting":
-#                 nHardWordsList = len(myTranscriber.transcriptList)
-#                 print("New Text:", myTranscriber.transcriptList[-1])
-#                 ''' Check to see if we need to find hard words'''
-#                 tmpTxt = "" + txt
-#                 checkTxt += txt
-                
-#                 if hasLongWords(txt, 5):
-#                     print("  Has Long Words")
-#                     hardW = await getHardWords(checkTxt)
-#                     print()
-#                     print("Hard Words Dictionary")
-#                     myTranscriber.printHardsWordsDict()
-#                     print()
-                    
-#                     checkTxt = ""
-#                 else:
-#                     print("  No Long Words")
-                    
-
-#         await asyncio.sleep(0.25) 
-
-
 # print "Hello" every 1 second (testing async)
 async def print_hello():
     while True:
         print("Hello")
         await asyncio.sleep(1)
 
-''' Get the light level from the MakerspaceNetwork Testing Pico'''
-async def getLightLevel(dt=1):
-    while True:
-        await getRequest('20.1.0.96:80/photoResistor')
-        # async with ClientSession() as session:
-        #     async with session.get('http://20.1.0.96:80/photoResistor') as resp:
-        #         print(resp.status)
-        #         print(await resp.text())
-        await asyncio.sleep(dt)
-
+''' Get the light level (defaults to the MakerspaceNetwork Testing Pico)'''
+async def getLightLevel(addr='20.1.0.96:80'):
+    data = await postRequest(addr=f"{addr}", action="photoResistor")
+    data = json.loads(data)
+    return data['status']
 
 
 async def main():
@@ -188,6 +158,9 @@ async def main():
     site = web.TCPSite(runner, host, 8080)  # Bind to the local IP address
     await site.start()
     print(f"Server running at http://{host}:8080/")
+
+    lightLevel = await getLightLevel()
+    print("Light Level: ", lightLevel)
 
     # asyncio.create_task(print_hello())
     '''    '''
