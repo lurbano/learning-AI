@@ -62,6 +62,7 @@ async def handlePost(request):
         rData['status'] = " <br> ".join(myTranscriber.transcriptList)
 
     if data['action'] == "hardWords":
+        print("Getting Hard Words")
         # hardWordsList = await getHardWords(data['value'])
         rData['item'] = "hardWords"
         # rData['status'] = await getHardWords(data['value'])

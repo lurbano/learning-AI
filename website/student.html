@@ -27,6 +27,13 @@
         .xBut {
             font-weight: bold;
         }
+
+        table, tr, td, th {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            
+        }
     </style>
 </head>
 
@@ -139,7 +146,7 @@
 
                     for (const [key, value] of Object.entries(hw)) {
                         console.log(`${key}: ${value}`);
-                        if (!(key in Object.keys(hw))){
+                        if (!(key in Object.keys(hardWordsDict))){
                             addHardWord(key, value);
                             //update the hardWordsDict
                             hardWordsDict[key] = value;
@@ -268,21 +275,27 @@
 
     };
 
-    function getHardWords(txt) {
-        // remove current hard words from string to see if there is anything new
-        tmpStr = txt;
-        for (const [key, value] of Object.entries(hw)) {
-            tmpStr = removeWordFromString(tmpStr, key);
-        }
+    // function getHardWords(txt) {
+    //     // remove current hard words from string to see if there is anything new
+    //     tmpStr = txt;
+    //     // for (const [key, value] of Object.entries(hw)) {
+    //     //     tmpStr = removeWordFromString(tmpStr, key);
+    //     // }
 
-        //check to see if we need to send to the server
-        if (!hasLongWords(tmpStr, maxLength = 5)) {
-            hardWordsString += txt;
-            sendRequest("/", "hardWords", hardWordsString);
-            hardWordsString = "";
-        } else {
-            hardWordsString += txt;
-        }
+    //     //check to see if we need to send to the server
+    //     if (!hasLongWords(tmpStr, maxLength = 5)) {
+    //         hardWordsString += txt;
+    //         sendRequest("/", "hardWords", hardWordsString);
+    //         hardWordsString = "";
+    //     } else {
+    //         hardWordsString += txt;
+    //     }
+
+    // }
+
+    function getHardWords() {
+
+            sendRequest("/", "hardWords");
 
     }
 
@@ -294,7 +307,7 @@
 
     monitorHardWords.addEventListener("change", function () {
         if (this.checked) {
-            hardWordsMonitor = setInterval(get_nHardWords, 1000);
+            hardWordsMonitor = setInterval(getHardWords, 1000);
             captionUpdates = setInterval(getCaptions, 1000);
         } else {
             if (typeof hardWordsMonitor !== 'undefined'){
