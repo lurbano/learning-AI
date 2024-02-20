@@ -145,8 +145,10 @@
                     hw = data["status"];
 
                     for (const [key, value] of Object.entries(hw)) {
-                        console.log(`${key}: ${value}`);
-                        if (!(key in Object.keys(hardWordsDict))){
+                        // console.log(`${key}: ${value}`);
+                        // console.log(Object.keys(hardWordsDict));
+                        // console.log(key in hardWordsDict);
+                        if (!(key in hardWordsDict)){
                             addHardWord(key, value);
                             //update the hardWordsDict
                             hardWordsDict[key] = value;
