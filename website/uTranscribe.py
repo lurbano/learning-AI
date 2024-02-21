@@ -155,14 +155,17 @@ class uTranscribe:
                 print("  No Long Words")
                     
     async def getHardWords(self, inputText, gradeLevel = "undergraduate", courseType="scientific"):
-        userText = f"give me definitions of the {courseType} words in the following passage that a {gradeLevel} student would find difficult: {inputText}"
-        print("Sending to OpenAI:", userText)
+        print()
+        print('OpenAI')
+        sysMsg = f"You are a note-taking assistant to a {gradeLevel} student that only returns a dictionary of {courseType} terms, with their definitions in word:definition JSON format."
+        userMsg = f"give me definitions of the {courseType} words in the following passage that a {gradeLevel} student would find difficult: {inputText}"
+        print("userMsg:", userMsg)
         client = OpenAI()
         completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a note-taking assistant to a {gradeLevel} student that only returns a dictionary of {courseType} terms, with their definitions in word:definition JSON format."},
-                {"role": "user", "content": userText}
+                {"role": "system", "content": sysMsg},
+                {"role": "user", "content": userMsg}
             ]
         )
         try:
