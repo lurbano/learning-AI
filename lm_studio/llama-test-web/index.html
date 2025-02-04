@@ -20,6 +20,7 @@
                     <li>Get URL e.g.: 'http://127.0.0.1:1234' </li>
                     <li>Choose Endpoint from 'Supported endpoints' e.g.: '/v1/chat/completions'</li>
                     <li>Set 'AI_URL' in this file to {url}{endpoint} e.g.: 'http://localhost:1234/v1/chat/completions'</li>
+                    <li>Set 'MODEL' to the model name</li>
                 </ul>
             </ul>
         </div>
@@ -37,6 +38,7 @@
     <script>
 
         AI_URL = 'http://localhost:1234/v1/chat/completions';
+        MODEL = "llama-3.2-1b-instruct";
 
 
         userInput.addEventListener("change", function(){
@@ -44,7 +46,7 @@
             console.log("Input:", user_input);
 
             payload = {
-                "model": "llama-3.2-1b-instruct",
+                "model": MODEL,
                 "messages": [
                     {"role": "system", "content": "Always answer in rhymes."},
                     {"role": "user", "content": user_input},
