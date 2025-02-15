@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sim</title>
+
+    <style>
+        .AI_talk {
+            border: 1px solid black;
+            background-color: lightpink;
+            height: 4em;
+            width: 75%;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .victim_input {
+            background-color: lightcyan;
+            height: 2em;
+            border-radius: 3px;
+
+        }
+
+        #dialog_container {
+            border: 1px solid black;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <input type="button" id="start_sim" value="Start Simulation">
+    <div id="dialog_container"></div>
+
+</body>
+
+<script src="aiSim_dialog.js"></script>
+<script>
+    start_sim.addEventListener("click", function(){
+        run_dialog("dialog_container");
+    })
+
+
+</script>
+
+</html>

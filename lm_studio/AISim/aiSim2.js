@@ -35,29 +35,36 @@ function run_sim(ai_div_id, victim_TextBox_id){
     //     console.log("victim:", dialog[i]["victim"]);
     // }
 
-    setTimeout(write_AI, 1000);
+    setTimeout(
+        ()=>{write_AI(aiDiv)}, 
+        1000
+    );
 }
 
 
-function write_AI(){
+function write_AI(div){
     let txt = dialog[dialog_i]["AI"];
-    aiDiv.innerHTML = txt;
-    setTimeout(write_victim, 1000);
+    div.innerHTML = txt;
+    setTimeout(
+        ()=>{write_victim(victimTxtBox)}, 
+        1000
+    );
 }
 
-function write_victim(){
+function write_victim(inputElement){
     let txt = dialog[dialog_i]["victim"];
-    victimTxtBox.value = txt;
+    inputElement.value = txt;
 
     //increment for next interaction
     dialog_i += 1
     if (dialog_i < dialog.length){
-        setTimeout(write_AI, 1000);
+        setTimeout(
+            ()=>{write_AI(aiDiv)}, 
+            1000
+        );
+    } else {
+        //reset
+        dialog_i = 0;
     }
 }
 
-
-function run_dialog(dialog_div_id){
-    dialogDiv = document.getElementById(dialog_div_id);
-    
-}
